@@ -7,7 +7,6 @@
 }
 
 .main {
-  transform: translateY(-100px);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -25,7 +24,8 @@
   border-top-left-radius: 4px;
   border-bottom-left-radius: 4px;
   border-width: 1px;
-  border-color: black;
+  border-color: transparent;
+  background-color: #eaeaea;
 }
 
 .form button {
@@ -35,6 +35,14 @@
   cursor: pointer;
   padding: 0.5rem 1rem;
   color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.2s;
+}
+
+.form button:active {
+  background-color: #f351008a;
 }
 
 .footer {
@@ -88,4 +96,8 @@
 .logo {
   height: 1em;
   margin-left: 0.5rem;
+}
+
+.answer {
+  margin-top: 2rem;
 }
