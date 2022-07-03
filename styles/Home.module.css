@@ -4,6 +4,7 @@
   justify-content: center;
   display: flex;
   align-items: center;
+  flex-direction: column;
 }
 
 .main {
@@ -11,6 +12,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  flex: 1;
 }
 
 .form {
@@ -51,10 +53,7 @@
   border-top: 1px solid #eaeaea;
   justify-content: center;
   align-items: center;
-  position: absolute;
   width: 100%;
-  bottom: 0;
-  left: 0;
 }
 
 .footer a {
@@ -64,14 +63,15 @@
   flex-grow: 1;
 }
 
-.title a {
+.container a {
   color: #f35100;
   text-decoration: none;
+  cursor: pointer;
 }
 
-.title a:hover,
-.title a:focus,
-.title a:active {
+.container a:hover,
+.container a:focus,
+.container a:active {
   text-decoration: underline;
 }
 
@@ -93,11 +93,14 @@
   border-color: #0070f3;
 }
 
-.logo {
-  height: 1em;
-  margin-left: 0.5rem;
-}
-
 .answer {
   margin-top: 2rem;
+  text-align: center;
+  font-size: 1.2rem;
+}
+
+@media only screen and (max-width: 600px) {
+  .title {
+    font-size: 2rem;
+  }
 }

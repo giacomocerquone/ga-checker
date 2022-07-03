@@ -1,7 +1,8 @@
 import Head from "next/head";
 import Image from "next/image";
 import styles from "../styles/Home.module.css";
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import Script from "next/script";
 
 const SubmitIcon = (props) => {
   return (
@@ -17,14 +18,26 @@ const SubmitIcon = (props) => {
 export default function Home() {
   const [url, setUrl] = useState("");
   const [usingGa, setUsingGa] = useState();
+  const [error, setError] = useState();
 
-  const onSubmit = (e) => {
+  const parsedURL = useMemo(() => {
+    try {
+      return new URL(url);
+    } catch (e) {}
+  }, [url]);
+
+  const cleanedURL = useMemo(() => {
+    return parsedURL?.hostname.replace("www.", "");
+  }, [parsedURL]);
+
+  const onSubmit = async (e) => {
     e.preventDefault();
-    fetch(`/api/scrape?url=${url}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setUsingGa(data?.ga);
-      });
+    const res = await fetch(`/api/scrape?url=${parsedURL.toString()}`);
+    const data = await res.json();
+    setUsingGa(data?.ga);
+    if (data?.error) {
+      setError(true);
+    }
   };
 
   return (
@@ -37,17 +50,38 @@ export default function Home() {
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
+      <Script id="hotjar" strategy="lazyOnLoad">
+        {`
+          (function(h,o,t,j,a,r){
+              h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+              h._hjSettings={hjid:3049593,hjsv:6};
+              a=o.getElementsByTagName('head')[0];
+              r=o.createElement('script');r.async=1;
+              r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+              a.appendChild(r);
+          })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+        `}
+      </Script>
 
       <main className={styles.main}>
         <h1 className={styles.title}>
           Check if it&apos;s using <br />
-          <a href="https://isgoogleanalyticsillegal.com/">Google Analytics</a>
+          <a
+            target="_blank"
+            rel="noopener noreferrer"
+            href="https://isgoogleanalyticsillegal.com/"
+          >
+            Google Analytics
+          </a>
         </h1>
         <form className={styles.form} onSubmit={onSubmit}>
           <input
             placeholder="https://..."
             type="text"
-            onChange={(e) => setUrl(e.target.value)}
+            onChange={(e) => {
+              setUsingGa(undefined);
+              setUrl(e.target.value);
+            }}
             value={url}
           />
           <button type="submit">
@@ -57,45 +91,46 @@ export default function Home() {
 
         <div className={styles.answer}>
           {usingGa === true && (
-            <>
-              <h2>YES!</h2>
-              <iframe
-                src="https://giphy.com/embed/W9WSk4tEU1aJW"
-                width="480"
-                height="270"
-                frameBorder="0"
-                className="giphy-embed"
-                allowFullScreen
-              />
-            </>
+            <p>
+              {cleanedURL} <b>is using</b>
+              <br />
+              Google Analytics
+            </p>
           )}
 
+          {console.log(parsedURL)}
+
           {usingGa === false && (
-            <>
-              <h2>NO!</h2>
-              <iframe
-                src="https://giphy.com/embed/15aGGXfSlat2dP6ohs"
-                width="480"
-                height="272"
-                frameBorder="0"
-                className="giphy-embed"
-                allowFullScreen
-              />
-            </>
+            <p>
+              {cleanedURL} <b>is not using</b>
+              <br />
+              Google Analytics
+            </p>
+          )}
+
+          {usingGa !== undefined && (
+            <a
+              href={`https://twitter.com/intent/tweet?text=${cleanedURL}%20${
+                usingGa ? "is" : "isn't"
+              }%20using%20Google%20Analytics`}
+            >
+              Tweet the result
+            </a>
+          )}
+
+          {error === true && usingGa === undefined && (
+            <p>Ouch! There has been an error.</p>
           )}
         </div>
       </main>
 
       <footer className={styles.footer}>
         <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
+          href="https://giacomocerquone.com"
           target="_blank"
           rel="noopener noreferrer"
         >
-          Powered by{" "}
-          <span className={styles.logo}>
-            <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-          </span>
+          Made in 🇮🇹 with ❤️ by g.cerquone
         </a>
       </footer>
     </div>
