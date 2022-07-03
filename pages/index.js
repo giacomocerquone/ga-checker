@@ -31,11 +31,13 @@ export default function Home() {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    const res = await fetch(`/api/scrape?url=${parsedURL.toString()}`);
-    const data = await res.json();
-    setUsingGa(data?.ga);
-    if (data?.error) {
-      setError(true);
+    if (parsedURL) {
+      const res = await fetch(`/api/scrape?url=${parsedURL.toString()}`);
+      const data = await res.json();
+      setUsingGa(data?.ga);
+      if (data?.error) {
+        setError(true);
+      }
     }
   };
 
@@ -97,9 +99,13 @@ export default function Home() {
 
           {usingGa !== undefined && (
             <a
-              href={`https://twitter.com/intent/tweet?text=${cleanedURL}%20${
-                usingGa ? "is" : "isn't"
-              }%20using%20Google%20Analytics`}
+              onClick={() => {
+                window.open(
+                  `https://twitter.com/intent/tweet?text=${cleanedURL}%20${
+                    usingGa ? "is" : "isn't"
+                  }%20using%20Google%20Analytics.%20Shared%20via%20gachecker.info`
+                );
+              }}
             >
               Tweet the result
             </a>
